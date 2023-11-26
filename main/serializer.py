@@ -12,7 +12,12 @@ class ShopUnitImport(serializers.ModelSerializer):
         instance.clean_fields()
         return super().update(instance, validated_data)
 
-    def validate(self, data):            
+    def validate(self, data):
+        if 'parentId' in data and data.get('parentId'):
+            parent = ShopUnit.objects.get(id = data.get('parentId').id)
+            if parent.type != 'CATEGORY':
+                raise serializers.ValidationError('Parrent is not a category')
+
         if data.get('type') == 'CATEGORY' and data.get('price'):
             raise serializers.ValidationError("Not need price for category")
         if data.get('type') == 'CATEGORY':
