@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import empty
 from rest_framework.response import Response
 from .models import ShopUnit
 from datetime import datetime
@@ -39,3 +40,7 @@ class ShopUnitImport(serializers.ModelSerializer):
         if value < 0:
             raise serializers.ValidationError('Price is less than 0')
         return value
+    
+
+class ShopUnitDelete(serializers.Serializer):
+    id = serializers.UUIDField()

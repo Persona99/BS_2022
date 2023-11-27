@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView, Response
-from .serializer import ShopUnitImport
+from .serializer import ShopUnitImport, ShopUnitDelete
 from .models import ShopUnit
 
 
@@ -17,3 +17,15 @@ class Import_api(APIView):
                 return Response(unit.errors, status=400)
             unit.save()
         return Response("OK", status=200)
+    
+
+class Delete_unit_api(APIView):
+    def delete(self, request, id):
+        serializer = ShopUnitDelete(data={'id':id})
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+        instanse = ShopUnit.objects.filter(id = id).first()
+        if not instanse:
+            return Response('Not found', status=404)
+        instanse.delete()
+        return Response('OK', status=200)
