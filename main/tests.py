@@ -257,10 +257,11 @@ def test_stats():
 
 
 def test_delete():
-    status, _ = request(f"/delete/{ROOT_ID}", method="DELETE")
+    status, data = request(f"/delete/{ROOT_ID}", method="DELETE")
     assert status == 200, f"Expected HTTP status code 200, got {status}"
-
-    status, _ = request(f"/nodes/{ROOT_ID}", json_response=True)
+    print(status, data)
+    status, data = request(f"/nodes/{ROOT_ID}", json_response=True)
+    print(status, data)
     assert status == 404, f"Expected HTTP status code 404, got {status}"
 
     print("Test delete passed.")
@@ -271,7 +272,7 @@ def test_all():
     # test_nodes()
     # test_sales()
     # test_stats()
-    # test_delete()
+    test_delete()
 
 
 def main():
