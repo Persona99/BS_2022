@@ -42,5 +42,22 @@ class ShopUnitImport(serializers.ModelSerializer):
         return value
     
 
-class ShopUnitDelete(serializers.Serializer):
+class ShopUnitUUid(serializers.Serializer):
     id = serializers.UUIDField()
+
+
+class RecursiveSerializer(serializers.Serializer):
+    def filter_empty_arr(self, data):
+        if data['type'] == 'OFFER':
+            data['children'] = None
+        return data
+
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context = self.context)
+        return self.filter_empty_arr(serializer.data)
+
+class ShopUnitGet(serializers.ModelSerializer):
+    children = RecursiveSerializer(many=True)
+    class Meta:
+        model = ShopUnit
+        fields = ['id', 'name', 'type', 'parentId', 'date', 'price', 'children']
