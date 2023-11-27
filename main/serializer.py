@@ -1,6 +1,4 @@
 from rest_framework import serializers
-from rest_framework.fields import empty
-from rest_framework.response import Response
 from .models import ShopUnit
 from datetime import datetime
 
@@ -56,8 +54,12 @@ class RecursiveSerializer(serializers.Serializer):
         serializer = self.parent.parent.__class__(value, context = self.context)
         return self.filter_empty_arr(serializer.data)
 
+class ShopUnitDate(serializers.Serializer):
+    date = serializers.DateTimeField(format='iso-8601')
+
 class ShopUnitGet(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True)
+    date = serializers.DateTimeField(format='iso-8601')
     class Meta:
         model = ShopUnit
         fields = ['id', 'name', 'type', 'parentId', 'date', 'price', 'children']
