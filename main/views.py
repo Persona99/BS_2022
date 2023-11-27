@@ -7,20 +7,25 @@ from django.db.models import Avg, Sum, Count
 
 # Create your views here.
 class Import_api(APIView):
-    def update_parent_date():
-        pass
+    def update_parent_date(self, instance):
+        parent = instance
+        while parent.parentId:
+            parent = ShopUnit.objects.filter(id = parent.parentId.id).first()
+            parent.date = instance.date
+            parent.save()
+
     def post(self, request):
         if 'updateDate' not in request.data:
             return Response(status=400)
         for item in request.data['items']:
             instance = ShopUnit.objects.filter(id=item['id']).first()
             item['date'] = request.data['updateDate']
-            print(item['date'])
             unit = ShopUnitImport(instance, data=item)
             if not unit.is_valid():
                 return Response(unit.errors, status=400)
-            print(unit.validated_date)
             unit.save()
+            instance = ShopUnit.objects.filter(id=item['id']).first()
+            self.update_parent_date(instance)
         return Response("OK", status=200)
     
 
@@ -50,7 +55,7 @@ class Notes_api(APIView):
         return res
 
 
-    def get(self, request , id):
+    def get(self, request, id):
         serialized_id = ShopUnitUUid(data={'id': id})
         if not serialized_id.is_valid():
             return Response(serialized_id.errors, status=400)
