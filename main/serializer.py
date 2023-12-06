@@ -38,10 +38,6 @@ class ShopUnitImport(serializers.ModelSerializer):
         if value < 0:
             raise serializers.ValidationError('Price is less than 0')
         return value
-    
-
-class ShopUnitUUid(serializers.Serializer):
-    id = serializers.UUIDField()
 
 
 class RecursiveSerializer(serializers.Serializer):
@@ -53,9 +49,6 @@ class RecursiveSerializer(serializers.Serializer):
     def to_representation(self, value):
         serializer = self.parent.parent.__class__(value, context = self.context)
         return self.filter_empty_arr(serializer.data)
-
-class ShopUnitDate(serializers.Serializer):
-    date = serializers.DateTimeField(format='iso-8601')
 
 class ShopUnitGet(serializers.ModelSerializer):
     children = RecursiveSerializer(many=True)
